@@ -6,7 +6,9 @@ Hello world operator created with Bonny.
 
 [HelloWorld Operator Docker Image](https://quay.io/coryodaniel/hello_world_operator)
 
-[HelloWorld Server Docker Image](https://quay.io/coryodaniel/hello-world)
+This [operator](./manifest.yaml) deploys a `Greeting` service which is a fancy k8s deployment running [this HelloWorld server](https://github.com/coryodaniel/hello-world) ([https://quay.io/coryodaniel/hello-world](Docker image)).
+
+The code for generating the lifecycle of a `Greeting` service is [here](./lib/hello_world_operator/controllers/v1/greeting.ex).
 
 ## Usage
 
@@ -19,13 +21,13 @@ mix bonny.gen.manifest --image quay.io/coryodaniel/hello_world_operator
 kubectl apply -f ./manifest.yaml
 ```
 
-*Deploying a HelloWorld servers:*
+*Deploying two `Greeting` services:*
 
-"Hello" server:
+"Hello" `Greeting` service:
 
 ```shell
 cat <<EOF | kubectl apply -f -
-apiVersion: bonny.test/v1
+apiVersion: hello-world.bonny.test/v1
 kind: Greeting
 metadata:
   name: hello-greeting
@@ -34,15 +36,24 @@ spec:
 EOF
 ```
 
-"Hola" server:
+"Hola" `Greeting` service:
 
 ```shell
 cat <<EOF | kubectl apply -f -
-apiVersion: bonny.test/v1
+apiVersion: hello-world.bonny.test/v1
 kind: Greeting
 metadata:
   name: hola-greeting
 spec:
   greeting: Hola
 EOF
+```
+
+Inspect the greeting resources:
+
+```shell
+# you should see two greetings
+kubectl get greetings 
+
+kubectl describe greetings/hello-greeting
 ```

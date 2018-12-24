@@ -45,6 +45,28 @@
       "apiGroups": [
         "hello-world.bonny.test"
       ]
+    },
+    {
+      "verbs": [
+        "*"
+      ],
+      "resources": [
+        "deployments"
+      ],
+      "apiGroups": [
+        "apps"
+      ]
+    },
+    {
+      "verbs": [
+        "*"
+      ],
+      "resources": [
+        "services"
+      ],
+      "apiGroups": [
+        ""
+      ]
     }
   ],
   "metadata": {
