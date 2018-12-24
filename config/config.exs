@@ -8,7 +8,7 @@ config :bonny,
 
   # Set the Kubernetes API group for this operator.
   # This can be overwritten using the @group attribute of a controller
-  group: "hello-world.bonny.to",
+  group: "hello-world.bonny.test",
 
   # Name must only consist of only lowercase letters and hyphens.
   # Defaults to "bonny"

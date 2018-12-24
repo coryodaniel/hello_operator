@@ -1,0 +1,191 @@
+---
+{
+  "spec": {
+    "version": "v1",
+    "scope": "Namespaced",
+    "names": {
+      "singular": "greeting",
+      "short_names": null,
+      "plural": "greetings",
+      "kind": "Greeting"
+    },
+    "group": "hello-world.bonny.test"
+  },
+  "metadata": {
+    "name": "greetings.hello-world.bonny.test",
+    "labels": {
+      "test-app": "hello-world",
+      "k8s-app": "hello-world"
+    }
+  },
+  "kind": "CustomResourceDefinition",
+  "apiVersion": "apiextensions.k8s.io/v1beta1"
+}
+---
+{
+  "rules": [
+    {
+      "verbs": [
+        "*"
+      ],
+      "resources": [
+        "customresourcedefinitions"
+      ],
+      "apiGroups": [
+        "apiextensions.k8s.io"
+      ]
+    },
+    {
+      "verbs": [
+        "*"
+      ],
+      "resources": [
+        "greetings"
+      ],
+      "apiGroups": [
+        "hello-world.bonny.test"
+      ]
+    }
+  ],
+  "metadata": {
+    "name": "hello-world",
+    "labels": {
+      "test-app": "hello-world",
+      "k8s-app": "hello-world"
+    }
+  },
+  "kind": "ClusterRole",
+  "apiVersion": "rbac.authorization.k8s.io/v1"
+}
+---
+{
+  "metadata": {
+    "namespace": "default",
+    "name": "hello-world",
+    "labels": {
+      "test-app": "hello-world",
+      "k8s-app": "hello-world"
+    }
+  },
+  "kind": "ServiceAccount",
+  "apiVersion": "v1"
+}
+---
+{
+  "subjects": [
+    {
+      "namespace": "default",
+      "name": "hello-world",
+      "kind": "ServiceAccount"
+    }
+  ],
+  "roleRef": {
+    "name": "hello-world",
+    "kind": "ClusterRole",
+    "apiGroup": "rbac.authorization.k8s.io"
+  },
+  "metadata": {
+    "name": "hello-world",
+    "labels": {
+      "test-app": "hello-world",
+      "k8s-app": "hello-world"
+    }
+  },
+  "kind": "ClusterRoleBinding",
+  "apiVersion": "rbac.authorization.k8s.io/v1"
+}
+---
+{
+  "spec": {
+    "template": {
+      "spec": {
+        "serviceAccountName": "hello-world",
+        "securityContext": {
+          "runAsUser": 65534,
+          "runAsNonRoot": true
+        },
+        "containers": [
+          {
+            "securityContext": {
+              "readOnlyRootFilesystem": true,
+              "allowPrivilegeEscalation": false
+            },
+            "resources": {
+              "requests": {
+                "memory": "200Mi",
+                "cpu": "200m"
+              },
+              "limits": {
+                "memory": "200Mi",
+                "cpu": "200m"
+              }
+            },
+            "name": "hello-world",
+            "image": "quay.io/coryodaniel/hello_world_operator",
+            "env": [
+              {
+                "value": "prod",
+                "name": "MIX_ENV"
+              },
+              {
+                "valueFrom": {
+                  "fieldRef": {
+                    "fieldPath": "metadata.name"
+                  }
+                },
+                "name": "BONNY_POD_NAME"
+              },
+              {
+                "valueFrom": {
+                  "fieldRef": {
+                    "fieldPath": "metadata.namespace"
+                  }
+                },
+                "name": "BONNY_POD_NAMESPACE"
+              },
+              {
+                "valueFrom": {
+                  "fieldRef": {
+                    "fieldPath": "status.podIP"
+                  }
+                },
+                "name": "BONNY_POD_IP"
+              },
+              {
+                "valueFrom": {
+                  "fieldRef": {
+                    "fieldPath": "spec.serviceAccountName"
+                  }
+                },
+                "name": "BONNY_POD_SERVICE_ACCOUNT"
+              }
+            ]
+          }
+        ]
+      },
+      "metadata": {
+        "labels": {
+          "test-app": "hello-world",
+          "k8s-app": "hello-world"
+        }
+      }
+    },
+    "selector": {
+      "matchLabels": {
+        "test-app": "hello-world",
+        "k8s-app": "hello-world"
+      }
+    },
+    "replicas": 1
+  },
+  "metadata": {
+    "namespace": "default",
+    "name": "hello-world",
+    "labels": {
+      "test-app": "hello-world",
+      "k8s-app": "hello-world"
+    }
+  },
+  "kind": "Deployment",
+  "apiVersion": "apps/v1beta2"
+}

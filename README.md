@@ -1,21 +1,48 @@
 # HelloWorldOperator
 
-**TODO: Add description**
+Hello world operator created with Bonny.
 
-## Installation
+[Bonny](https://github.com/coryodaniel/bonny) is a Kubernetes Operator SDK written in Elixir.
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `hello_world_operator` to your list of dependencies in `mix.exs`:
+[HelloWorld Operator Docker Image](https://quay.io/coryodaniel/hello_world_operator)
 
-```elixir
-def deps do
-  [
-    {:hello_world_operator, "~> 0.1.0"}
-  ]
-end
+[HelloWorld Server Docker Image](https://quay.io/coryodaniel/hello-world)
+
+## Usage
+
+*Deploying the operator:*
+
+```shell
+mix deps.get
+mix compile
+mix bonny.gen.manifest --image quay.io/coryodaniel/hello_world_operator
+kubectl apply -f ./manifest.yaml
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/hello_world_operator](https://hexdocs.pm/hello_world_operator).
+*Deploying a HelloWorld servers:*
 
+"Hello" server:
+
+```shell
+cat <<EOF | kubectl apply -f -
+apiVersion: bonny.test/v1
+kind: Greeting
+metadata:
+  name: hello-greeting
+spec:
+  greeting: Hello
+EOF
+```
+
+"Hola" server:
+
+```shell
+cat <<EOF | kubectl apply -f -
+apiVersion: bonny.test/v1
+kind: Greeting
+metadata:
+  name: hola-greeting
+spec:
+  greeting: Hola
+EOF
+```
