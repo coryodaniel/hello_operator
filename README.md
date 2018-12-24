@@ -23,7 +23,7 @@ kubectl apply -f ./manifest.yaml
 
 *Deploying two `Greeting` services:*
 
-"Hello" `Greeting` service:
+Create the "Hello" and "Hola" Greeting services:
 
 ```shell
 cat <<EOF | kubectl apply -f -
@@ -33,13 +33,7 @@ metadata:
   name: hello-greeting
 spec:
   greeting: Hello
-EOF
-```
-
-"Hola" `Greeting` service:
-
-```shell
-cat <<EOF | kubectl apply -f -
+---
 apiVersion: hello-world.bonny.test/v1
 kind: Greeting
 metadata:
@@ -56,4 +50,15 @@ Inspect the greeting resources:
 kubectl get greetings 
 
 kubectl describe greetings/hello-greeting
+
+kubectl describe greetings/hola-greeting
 ```
+
+You should be able to browse to NodePort Service of each:
+
+* http://HELLO_SERVICE_NODE_PORT/greeting/Chauncy - Hello, Chauncy
+* http://HOLA_SERVICE_NODE_PORT/greeting/Chauncy - Hola, Chauncy
+
+## Kubernetes Client
+
+This project uses a very trivial [kubernetes client](./lib/k8s/client.ex). It is not recommended for production.

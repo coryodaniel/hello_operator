@@ -57,78 +57,116 @@ defmodule HelloWorldOperator.Controller.V1.Greeting do
   # @rule {"", ["secrets"], ["create"]}
 
   @doc """
-  Handles an `ADDED` event
+  Creates a kubernetes `deployment` and `service` that runs a "Hello, World" app.
   """
   @spec add(map()) :: :ok | :error
-  def add(%{"metadata" => %{"name" => name}, "spec" => %{"greeting" => greeting}}) do
-    add_deployment(name, greeting)
-    add_service(name, greeting)
-    :ok
+  def add(%{
+        "metadata" => %{"name" => name, "namespace" => ns},
+        "spec" => %{"greeting" => greeting}
+      }) do
+    deployment = gen_deployment(ns, name, greeting)
+    service = gen_service(ns, name, greeting)
+
+    conf = Bonny.kubeconfig()
+
+    with :ok <- K8s.Client.post(deployment, conf),
+         :ok <- K8s.Client.post(service, conf) do
+      :ok
+    else
+      {:error, error} -> {:error, error}
+    end
   end
 
-  defp add_service(name, greeting) do
+  @doc """
+  Updates `deployment` and `service` resources.
+  """
+  @spec modify(map()) :: :ok | :error
+  def modify(%{
+        "metadata" => %{"name" => name, "namespace" => ns},
+        "spec" => %{"greeting" => greeting}
+      }) do
+    deployment = gen_deployment(ns, name, greeting)
+    service = gen_service(ns, name, greeting)
+
+    conf = Bonny.kubeconfig()
+
+    with :ok <- K8s.Client.patch(deployment, conf),
+         :ok <- K8s.Client.patch(service, conf) do
+      :ok
+    else
+      {:error, error} -> {:error, error}
+    end
+  end
+
+  @doc """
+  Deletes `deployment` and `service` resources.
+  """
+  @spec delete(map()) :: :ok | :error
+  def delete(%{
+        "metadata" => %{"name" => name, "namespace" => ns},
+        "spec" => %{"greeting" => greeting}
+      }) do
+    deployment = gen_deployment(ns, name, greeting)
+    service = gen_service(ns, name, greeting)
+
+    conf = Bonny.kubeconfig()
+
+    with :ok <- K8s.Client.delete(deployment, conf),
+         :ok <- K8s.Client.delete(service, conf) do
+      :ok
+    else
+      {:error, error} -> {:error, error}
+    end
+  end
+
+
+  defp gen_service(ns, name, greeting) do
     %{
-      "apiVersion": "v1",
-      "kind": "Service",
-      "metadata": %{
-        "name": name,
-        "labels": %{"app": "hello-server"}
+      apiVersion: "v1",
+      kind: "Service",
+      metadata: %{
+        name: name,
+        namespace: ns,
+        labels: %{app: "hello-server"}
       },
-      "spec": %{
-        "ports": [%{"port": 5000, "protocol": "TCP"}],
-        "selector": %{"app": "hello-server"},
-        "type": "NodePort"
+      spec: %{
+        ports: [%{port: 5000, protocol: "TCP"}],
+        selector: %{app: "hello-server"},
+        type: "NodePort"
       }
     }
   end
 
-  defp add_deployment(name, greeting) do
+  defp gen_deployment(ns, name, greeting) do
     %{
-      "apiVersion": "apps/v1",
-      "kind": "Deployment",
-      "metadata": %{
-        "name": name,
-        "labels": %{"app": "hello-server"}
+      apiVersion: "apps/v1",
+      kind: "Deployment",
+      metadata: %{
+        name: name,
+        namespace: ns,
+        labels: %{app: "hello-server"}
       },
-      "spec": %{
-        "replicas": 2,
-        "selector": %{
-          "matchLabels": %{"app": "hello-server"}
+      spec: %{
+        replicas: 2,
+        selector: %{
+          matchLabels: %{app: "hello-server"}
         },
-        "template": %{
-          "metadata": %{
-            "labels": %{"app": "hello-server"}
+        template: %{
+          metadata: %{
+            labels: %{app: "hello-server"}
           },
-          "spec": %{
-            "containers": [
+          spec: %{
+            containers: [
               %{
-                "name": "hello-server",
-                "image": "quay.io/coryodaniel/hello-world",
-                "env": [%{"name": "GREETING", "value": greeting}],
-                "ports": [%{"containerPort": 5000}]
+                name: "hello-server",
+                image: "quay.io/coryodaniel/hello-world",
+                env: [%{name: "GREETING", value: greeting}],
+                ports: [%{containerPort: 5000}]
               }
             ]
           }
         }
       }
     }
-  end
-
-  @doc """
-  Handles a `MODIFIED` event
-  """
-  @spec add(map()) :: :ok | :error
-  def modify(payload) do
-    IO.inspect(payload)
-    :ok
-  end
-
-  @doc """
-  Handles a `DELETED` event
-  """
-  @spec add(map()) :: :ok | :error
-  def delete(payload) do
-    IO.inspect(payload)
-    :ok
   end
 end
