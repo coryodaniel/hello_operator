@@ -17,6 +17,7 @@ config :bonny,
   # Name must only consist of only lowercase letters and hyphens.
   # Defaults to "bonny"
   operator_name: "hello-operator",
+
   labels: %{
     "test-app" => "hello-operator"
   }
