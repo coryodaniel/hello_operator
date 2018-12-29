@@ -120,11 +120,11 @@ defmodule HelloOperator.Controller.V1.Greeting do
       metadata: %{
         name: name,
         namespace: ns,
-        labels: %{app: "greeting-server"}
+        labels: %{app: name}
       },
       spec: %{
         ports: [%{port: 5000, protocol: "TCP"}],
-        selector: %{app: "greeting-server"},
+        selector: %{app: name},
         type: "NodePort"
       }
     }
@@ -137,21 +137,21 @@ defmodule HelloOperator.Controller.V1.Greeting do
       metadata: %{
         name: name,
         namespace: ns,
-        labels: %{app: "greeting-server"}
+        labels: %{app: name}
       },
       spec: %{
         replicas: 2,
         selector: %{
-          matchLabels: %{app: "greeting-server"}
+          matchLabels: %{app: name}
         },
         template: %{
           metadata: %{
-            labels: %{app: "greeting-server"}
+            labels: %{app: name}
           },
           spec: %{
             containers: [
               %{
-                name: "greeting-server",
+                name: name,
                 image: "quay.io/coryodaniel/greeting-server",
                 env: [%{name: "GREETING", value: greeting}],
                 ports: [%{containerPort: 5000}]

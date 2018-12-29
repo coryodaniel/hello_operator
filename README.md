@@ -56,6 +56,11 @@ kubectl describe greetings/hola-server
 
 You should be able to browse to NodePort Service of each:
 
+```shell
+kubectl get svc/hello-server
+kubectl get svc/hola-server
+```
+
 * http://HELLO_SERVICE_NODE_PORT/greeting/Chauncy - Hello, Chauncy
 * http://HOLA_SERVICE_NODE_PORT/greeting/Chauncy - Hola, Chauncy
 
