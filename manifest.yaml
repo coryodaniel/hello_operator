@@ -9,13 +9,13 @@
       "plural": "greetings",
       "kind": "Greeting"
     },
-    "group": "hello-world.bonny.test"
+    "group": "hello-operator.bonny.test"
   },
   "metadata": {
-    "name": "greetings.hello-world.bonny.test",
+    "name": "greetings.hello-operator.bonny.test",
     "labels": {
-      "test-app": "hello-world",
-      "k8s-app": "hello-world"
+      "test-app": "hello-operator",
+      "k8s-app": "hello-operator"
     }
   },
   "kind": "CustomResourceDefinition",
@@ -43,7 +43,7 @@
         "greetings"
       ],
       "apiGroups": [
-        "hello-world.bonny.test"
+        "hello-operator.bonny.test"
       ]
     },
     {
@@ -70,10 +70,10 @@
     }
   ],
   "metadata": {
-    "name": "hello-world",
+    "name": "hello-operator",
     "labels": {
-      "test-app": "hello-world",
-      "k8s-app": "hello-world"
+      "test-app": "hello-operator",
+      "k8s-app": "hello-operator"
     }
   },
   "kind": "ClusterRole",
@@ -83,10 +83,10 @@
 {
   "metadata": {
     "namespace": "default",
-    "name": "hello-world",
+    "name": "hello-operator",
     "labels": {
-      "test-app": "hello-world",
-      "k8s-app": "hello-world"
+      "test-app": "hello-operator",
+      "k8s-app": "hello-operator"
     }
   },
   "kind": "ServiceAccount",
@@ -97,20 +97,20 @@
   "subjects": [
     {
       "namespace": "default",
-      "name": "hello-world",
+      "name": "hello-operator",
       "kind": "ServiceAccount"
     }
   ],
   "roleRef": {
-    "name": "hello-world",
+    "name": "hello-operator",
     "kind": "ClusterRole",
     "apiGroup": "rbac.authorization.k8s.io"
   },
   "metadata": {
-    "name": "hello-world",
+    "name": "hello-operator",
     "labels": {
-      "test-app": "hello-world",
-      "k8s-app": "hello-world"
+      "test-app": "hello-operator",
+      "k8s-app": "hello-operator"
     }
   },
   "kind": "ClusterRoleBinding",
@@ -121,7 +121,7 @@
   "spec": {
     "template": {
       "spec": {
-        "serviceAccountName": "hello-world",
+        "serviceAccountName": "hello-operator",
         "securityContext": {
           "runAsUser": 65534,
           "runAsNonRoot": true
@@ -142,8 +142,8 @@
                 "cpu": "200m"
               }
             },
-            "name": "hello-world",
-            "image": "quay.io/coryodaniel/hello_world_operator",
+            "name": "hello-operator",
+            "image": "quay.io/coryodaniel/hello_operator",
             "env": [
               {
                 "value": "prod",
@@ -187,25 +187,25 @@
       },
       "metadata": {
         "labels": {
-          "test-app": "hello-world",
-          "k8s-app": "hello-world"
+          "test-app": "hello-operator",
+          "k8s-app": "hello-operator"
         }
       }
     },
     "selector": {
       "matchLabels": {
-        "test-app": "hello-world",
-        "k8s-app": "hello-world"
+        "test-app": "hello-operator",
+        "k8s-app": "hello-operator"
       }
     },
     "replicas": 1
   },
   "metadata": {
     "namespace": "default",
-    "name": "hello-world",
+    "name": "hello-operator",
     "labels": {
-      "test-app": "hello-world",
-      "k8s-app": "hello-world"
+      "test-app": "hello-operator",
+      "k8s-app": "hello-operator"
     }
   },
   "kind": "Deployment",

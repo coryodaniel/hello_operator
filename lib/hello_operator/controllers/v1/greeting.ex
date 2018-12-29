@@ -1,6 +1,6 @@
-defmodule HelloWorldOperator.Controller.V1.Greeting do
+defmodule HelloOperator.Controller.V1.Greeting do
   @moduledoc """
-  HelloWorldOperator: Greeting CRD.
+  HelloOperator: Greeting CRD.
 
   ## Kubernetes CRD Spec
 
@@ -60,17 +60,12 @@ defmodule HelloWorldOperator.Controller.V1.Greeting do
   Creates a kubernetes `deployment` and `service` that runs a "Hello, World" app.
   """
   @spec add(map()) :: :ok | :error
-  def add(%{
-        "metadata" => %{"name" => name, "namespace" => ns},
-        "spec" => %{"greeting" => greeting}
-      }) do
-    deployment = gen_deployment(ns, name, greeting)
-    service = gen_service(ns, name, greeting)
-
+  def add(payload) do
+    resources = parse(payload)
     conf = Bonny.kubeconfig()
 
-    with :ok <- K8s.Client.post(deployment, conf),
-         :ok <- K8s.Client.post(service, conf) do
+    with :ok <- K8s.Client.post(resources.deployment, conf),
+         :ok <- K8s.Client.post(resources.service, conf) do
       :ok
     else
       {:error, error} -> {:error, error}
@@ -81,17 +76,12 @@ defmodule HelloWorldOperator.Controller.V1.Greeting do
   Updates `deployment` and `service` resources.
   """
   @spec modify(map()) :: :ok | :error
-  def modify(%{
-        "metadata" => %{"name" => name, "namespace" => ns},
-        "spec" => %{"greeting" => greeting}
-      }) do
-    deployment = gen_deployment(ns, name, greeting)
-    service = gen_service(ns, name, greeting)
-
+  def modify(payload) do
+    resources = parse(payload)
     conf = Bonny.kubeconfig()
 
-    with :ok <- K8s.Client.patch(deployment, conf),
-         :ok <- K8s.Client.patch(service, conf) do
+    with :ok <- K8s.Client.patch(resources.deployment, conf),
+         :ok <- K8s.Client.patch(resources.service, conf) do
       :ok
     else
       {:error, error} -> {:error, error}
@@ -102,23 +92,26 @@ defmodule HelloWorldOperator.Controller.V1.Greeting do
   Deletes `deployment` and `service` resources.
   """
   @spec delete(map()) :: :ok | :error
-  def delete(%{
-        "metadata" => %{"name" => name, "namespace" => ns},
-        "spec" => %{"greeting" => greeting}
-      }) do
-    deployment = gen_deployment(ns, name, greeting)
-    service = gen_service(ns, name, greeting)
-
+  def delete(payload) do
+    resources = parse(payload)
     conf = Bonny.kubeconfig()
 
-    with :ok <- K8s.Client.delete(deployment, conf),
-         :ok <- K8s.Client.delete(service, conf) do
+    with :ok <- K8s.Client.delete(resources.deployment, conf),
+         :ok <- K8s.Client.delete(resources.service, conf) do
       :ok
     else
       {:error, error} -> {:error, error}
     end
   end
 
+  defp parse(%{"metadata" => %{"name" => name, "namespace" => ns}, "spec" => %{"greeting" => greeting}}) do
+    deployment = gen_deployment(ns, name, greeting)
+    service = gen_service(ns, name, greeting)
+    %{
+      deployment: deployment,
+      service: service
+    }
+  end
 
   defp gen_service(ns, name, greeting) do
     %{
@@ -127,11 +120,11 @@ defmodule HelloWorldOperator.Controller.V1.Greeting do
       metadata: %{
         name: name,
         namespace: ns,
-        labels: %{app: "hello-server"}
+        labels: %{app: "greeting-server"}
       },
       spec: %{
         ports: [%{port: 5000, protocol: "TCP"}],
-        selector: %{app: "hello-server"},
+        selector: %{app: "greeting-server"},
         type: "NodePort"
       }
     }
@@ -144,22 +137,22 @@ defmodule HelloWorldOperator.Controller.V1.Greeting do
       metadata: %{
         name: name,
         namespace: ns,
-        labels: %{app: "hello-server"}
+        labels: %{app: "greeting-server"}
       },
       spec: %{
         replicas: 2,
         selector: %{
-          matchLabels: %{app: "hello-server"}
+          matchLabels: %{app: "greeting-server"}
         },
         template: %{
           metadata: %{
-            labels: %{app: "hello-server"}
+            labels: %{app: "greeting-server"}
           },
           spec: %{
             containers: [
               %{
-                name: "hello-server",
-                image: "quay.io/coryodaniel/hello-world",
+                name: "greeting-server",
+                image: "quay.io/coryodaniel/greeting-server",
                 env: [%{name: "GREETING", value: greeting}],
                 ports: [%{containerPort: 5000}]
               }

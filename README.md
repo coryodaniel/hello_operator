@@ -1,14 +1,14 @@
-# HelloWorldOperator
+# HelloOperator
 
 Hello world operator created with Bonny.
 
 [Bonny](https://github.com/coryodaniel/bonny) is a Kubernetes Operator SDK written in Elixir.
 
-[HelloWorld Operator Docker Image](https://quay.io/coryodaniel/hello_world_operator)
+[HelloOperator Docker Image](https://quay.io/coryodaniel/hello_operator)
 
-This [operator](./manifest.yaml) deploys a `Greeting` service which is a fancy k8s deployment running [this HelloWorld server](https://github.com/coryodaniel/hello-world) ([https://quay.io/coryodaniel/hello-world](Docker image)).
+This [operator](./manifest.yaml) contains all the resources necessary to define an operator (CRDs, RBAC, ServiceAccount, and Deployment). The operator itself creates a simple Deployment running the [greeting-server](https://github.com/coryodaniel/greeting-server) and an HTTP Service.
 
-The code for generating the lifecycle of a `Greeting` service is [here](./lib/hello_world_operator/controllers/v1/greeting.ex).
+The code for generating the lifecycle of a `Greeting` Deployment/Service is [here](./lib/hello_operator/controllers/v1/greeting.ex).
 
 ## Usage
 
@@ -17,27 +17,27 @@ The code for generating the lifecycle of a `Greeting` service is [here](./lib/he
 ```shell
 mix deps.get
 mix compile
-mix bonny.gen.manifest --image quay.io/coryodaniel/hello_world_operator
+mix bonny.gen.manifest --image quay.io/coryodaniel/hello_operator
 kubectl apply -f ./manifest.yaml
 ```
 
-*Deploying two `Greeting` services:*
+*Create two `Greeting` resources:*
 
 Create the "Hello" and "Hola" Greeting services:
 
 ```shell
 cat <<EOF | kubectl apply -f -
-apiVersion: hello-world.bonny.test/v1
+apiVersion: hello-operator.bonny.test/v1
 kind: Greeting
 metadata:
-  name: hello-greeting
+  name: hello-server
 spec:
   greeting: Hello
 ---
-apiVersion: hello-world.bonny.test/v1
+apiVersion: hello-operator.bonny.test/v1
 kind: Greeting
 metadata:
-  name: hola-greeting
+  name: hola-server
 spec:
   greeting: Hola
 EOF
@@ -49,9 +49,9 @@ Inspect the greeting resources:
 # you should see two greetings
 kubectl get greetings 
 
-kubectl describe greetings/hello-greeting
+kubectl describe greetings/hello-server
 
-kubectl describe greetings/hola-greeting
+kubectl describe greetings/hola-server
 ```
 
 You should be able to browse to NodePort Service of each:

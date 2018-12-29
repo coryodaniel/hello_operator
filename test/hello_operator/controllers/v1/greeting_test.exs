@@ -1,7 +1,7 @@
-defmodule HelloWorldOperator.Controller.V1.GreetingTest do
+defmodule HelloOperator.Controller.V1.GreetingTest do
   @moduledoc false
   use ExUnit.Case, async: false
-  alias HelloWorldOperator.Controller.V1.Greeting
+  alias HelloOperator.Controller.V1.Greeting
 
   describe "add/1" do
     test "returns :ok" do
