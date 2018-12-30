@@ -11,7 +11,7 @@ defmodule HelloOperator.Controller.V1.Greeting do
   # Kubernetes API version of this CRD, defaults to value in module name
   @version "v2alpha1"
 
-  # Kubernetes API group of this CRD, defaults to "bonny.example.io"
+  # Kubernetes API group of this CRD, defaults to "hello-operator.example.com"
   @group "kewl.example.io"
 
   The scope of the CRD. Defaults to `:namespaced`
@@ -62,7 +62,7 @@ defmodule HelloOperator.Controller.V1.Greeting do
   @spec add(map()) :: :ok | :error
   def add(payload) do
     resources = parse(payload)
-    conf = Bonny.kubeconfig()
+    conf = Bonny.Config.kubeconfig()
 
     with :ok <- K8s.Client.post(resources.deployment, conf),
          :ok <- K8s.Client.post(resources.service, conf) do
@@ -78,7 +78,7 @@ defmodule HelloOperator.Controller.V1.Greeting do
   @spec modify(map()) :: :ok | :error
   def modify(payload) do
     resources = parse(payload)
-    conf = Bonny.kubeconfig()
+    conf = Bonny.Config.kubeconfig()
 
     with :ok <- K8s.Client.patch(resources.deployment, conf),
          :ok <- K8s.Client.patch(resources.service, conf) do
@@ -94,7 +94,7 @@ defmodule HelloOperator.Controller.V1.Greeting do
   @spec delete(map()) :: :ok | :error
   def delete(payload) do
     resources = parse(payload)
-    conf = Bonny.kubeconfig()
+    conf = Bonny.Config.kubeconfig()
 
     with :ok <- K8s.Client.delete(resources.deployment, conf),
          :ok <- K8s.Client.delete(resources.service, conf) do

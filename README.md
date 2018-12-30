@@ -17,7 +17,18 @@ The code for generating the lifecycle of a `Greeting` Deployment/Service is [her
 ```shell
 mix deps.get
 mix compile
-mix bonny.gen.manifest --image quay.io/coryodaniel/hello_operator
+
+# Build docker image
+mix bonny.gen.dockerfile
+export BONNY_IMAGE=YOUR_IMAGE_NAME_HERE
+docker build -t ${BONNY_IMAGE} .
+docker push ${BONNY_IMAGE}:latest
+
+# Optionally, skip building the docker image and play with the operator
+# export BONNY_IMAGE=quay.io/coryodaniel/hello_operator
+
+# Deploy to kubernetes
+mix bonny.gen.manifest --image ${BONNY_IMAGE}
 kubectl apply -f ./manifest.yaml
 ```
 
@@ -26,21 +37,7 @@ kubectl apply -f ./manifest.yaml
 Create the "Hello" and "Hola" Greeting services:
 
 ```shell
-cat <<EOF | kubectl apply -f -
-apiVersion: hello-operator.bonny.test/v1
-kind: Greeting
-metadata:
-  name: hello-server
-spec:
-  greeting: Hello
----
-apiVersion: hello-operator.bonny.test/v1
-kind: Greeting
-metadata:
-  name: hola-server
-spec:
-  greeting: Hola
-EOF
+kubectl apply -f ./greetings.yaml
 ```
 
 Inspect the greeting resources:
