@@ -2,10 +2,11 @@ use Mix.Config
 
 config :logger, level: :debug
 
-config :bonny,
-  # Kubernetes YAML config, defaults to the service account of the pod
-  kubeconf_file: "./kubeconfig.yaml",
+if Mix.env() == :dev do
+  config :bonny, kubeconf_file: "./kubeconfig.yaml"
+end
 
+config :bonny,
   # Add each CRD Controller module for this operator to load here
   # Defaults to all implementations of Bonny.Controller
   controllers: [
