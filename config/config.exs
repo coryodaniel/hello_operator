@@ -3,12 +3,12 @@ use Mix.Config
 config :logger, level: :debug
 
 if Mix.env() == :dev do
-  config :bonny, kubeconf_file: "./kubeconfig.yaml"
+  # config :bonny, kubeconf_file: "./kubeconfig.yaml"
+  config :bonny, kubeconf_file: "~/.kube/config"
 end
 
 config :bonny,
   # Add each CRD Controller module for this operator to load here
-  # Defaults to all implementations of Bonny.Controller
   controllers: [
     HelloOperator.Controller.V1.Greeting
   ]

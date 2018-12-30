@@ -1,4 +1,4 @@
-.PHONY: clean compile build apply greetings
+.PHONY: clean compile build apply greetings local
 
 BONNY_IMAGE=quay.io/coryodaniel/hello_operator
 
@@ -12,6 +12,12 @@ build:
 	mix bonny.gen.dockerfile
 	docker build -t ${BONNY_IMAGE} .
 	docker push ${BONNY_IMAGE}:latest
+
+local:
+	- rm manifest.yaml
+	mix bonny.gen.manifest
+	kubectl apply -f ./manifest.yaml
+	iex -S mix
 
 apply:
 	mix bonny.gen.manifest --image ${BONNY_IMAGE}
