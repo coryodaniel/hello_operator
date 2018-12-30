@@ -12,7 +12,19 @@ The code for generating the lifecycle of a `Greeting` Deployment/Service is [her
 
 ## Usage
 
-*Deploying the operator:*
+*Deploying the operator outside a cluster (development):*
+
+```shell
+mix deps.get
+mix compile
+
+# Deploy to kubernetes
+mix bonny.gen.manifest
+kubectl apply -f ./manifest.yaml
+iex -S mix
+```
+
+*Deploying the operator inside a cluster (production):*
 
 ```shell
 mix deps.get
