@@ -47,7 +47,7 @@ defmodule K8s.Client do
 
   defp handle_response(resp) do
     case resp do
-      {:ok, %HTTPoison.Response{status_code: code, body: body}} when code >= 200 and code < 300 ->
+      {:ok, %HTTPoison.Response{status_code: code, body: _body}} when code >= 200 and code < 300 ->
         :ok
 
       {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
