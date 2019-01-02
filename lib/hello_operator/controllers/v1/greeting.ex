@@ -46,15 +46,12 @@ defmodule HelloOperator.Controller.V1.Greeting do
 
   # @group "your-operator.your-domain.com"
   # @version "v1"
-  # @scope :namespaced
-  # @names %{
-  #   plural: "foos",
-  #   singular: "foo",
-  #   kind: "Foo"
-  # }
-
-  # @rule {"", ["pods", "configmap"], ["*"]}
-  # @rule {"", ["secrets"], ["create"]}
+  @scope :namespaced
+  @names %{
+    plural: "greetings",
+    singular: "greeting",
+    kind: "Greeting"
+  }
 
   @doc """
   Creates a kubernetes `deployment` and `service` that runs a "Hello, World" app.
