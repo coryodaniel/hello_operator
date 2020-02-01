@@ -3,8 +3,15 @@ use Mix.Config
 config :logger, level: :debug
 
 if Mix.env() == :dev do
-  # config :bonny, kubeconf_file: "./kubeconfig.yaml"
-  config :bonny, kubeconf_file: "~/.kube/config"
+  config :k8s,
+    clusters: %{
+      dev: %{
+        conn: "~/.kube/config"
+      }
+    }
+
+  config :bonny,
+    cluster_name: :dev
 end
 
 config :bonny,

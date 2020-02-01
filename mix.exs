@@ -21,7 +21,7 @@ defmodule HelloOperator.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:bonny, "~> 0.2"},
+      {:bonny, "~> 0.4"},
       # {:bonny, path: "/Users/coryodaniel/Workspace/coryodaniel/bonny"},
       {:httpoison, "~> 1.4"},
       {:poison, "~> 4.0"}
